@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panelization Optimization (Blue Scale)</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; border-radius: 8px; }
+        h2 { text-align: center; color: #1d1d1f; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #86868b; margin-top: 0px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Yield Optimization: Expanded View</h2>
+        <p class="subtitle">200x280 Panel | 10mm Border | 3mm Gap | All Key Configurations</p>
+        <div id="heatmap"></div>
+    </div>
+    <script>
+        const pw = 200, ph = 280;
+        const border = 10;
+        const usable_w = pw - (2 * border); // 180
+        const usable_h = ph - (2 * border); // 260
+        const sp = 3;
+        
+        // Sweep Width: 15mm to 50mm
+        const wRange = [];
+        for(let i = 150; i <= 500; i += 2) wRange.push(i / 10);
+        
+        // Sweep Height: 40mm to 115mm 
+        const hRange = [];
+        for(let i = 400; i <= 1150; i += 2) hRange.push(i / 10);
+        
+        const zData = [];
+        for (let i = 0; i < hRange.length; i++) {
+            const h = hRange[i];
+            const row = [];
+            for (let j = 0; j < wRange.length; j++) {
+                const w = wRange[j];
+                const c1 = Math.floor((usable_w + sp) / (w + sp)) * Math.floor((usable_h + sp) / (h + sp));
+                const c2 = Math.floor((usable_w + sp) / (h + sp)) * Math.floor((usable_h + sp) / (w + sp));
+                const maxC = Math.max(c1, c2);
+                
+                const yieldPct = (maxC * w * h) / (pw * ph) * 100;
+                row.push(yieldPct);
+            }
+            zData.push(row);
+        }
+
+        const heatmap = {
+            z: zData,
+            x: wRange,
+            y: hRange,
+            type: 'heatmap',
+            // Custom colorscale: White (0%) -> Light Blue (50%) -> Deep Blue (100%)
+            colorscale: [
+                [0.0, '#ffffff'], 
+                [0.5, '#74b9ff'], 
+                [1.0, '#0984e3']
+            ],
+            zmin: 40,
+            zmax: 80,
+            hoverongaps: false,
+            hovertemplate: 'Width: %{x:.1f}mm<br>Height: %{y:.1f}mm<br>Yield: %{z:.2f}%<extra></extra>'
+        };
+
+        const markers = {
+            x: [22, 23.1, 29.8, 33.6, 34.5, 42, 22, 42],
+            y: [93, 84.6, 88.5, 84.6, 88.5, 106, 62.7, 62.7],
+            mode: 'markers+text',
+            type: 'scatter',
+            name: 'Key Configurations',
+            text: [
+                'Old Baseline (14u)', 
+                'Max Area 21u (73.3%)',  
+                '16u (>75%)', 
+                '15u (>76%)', 
+                '14u (>76%)',
+                '42x106 (8u, 63.6%)',
+                '22x62.7 (4 Rows, 28u)',
+                '42x62.7 (4 Rows, 16u, 75.2%)'
+            ],
+            textposition: [
+                'bottom right', 
+                'bottom left', 
+                'top center', 
+                'bottom center', 
+                'top right',
+                'bottom center',
+                'top right',
+                'top center'
+            ],
+            marker: { 
+                size: [10, 10, 12, 12, 12, 10, 10, 12], 
+                // Updated some marker colors to stand out better against the blue/white background
+                color: ['#ff3b30', '#00b894', '#00b894', '#00b894', '#00b894', '#fdcb6e', '#fd79a8', '#00b894'], 
+                line: {color: '#1d1d1f', width: 2} 
+            },
+            hoverinfo: 'none'
+        };
+
+        const layout = {
+            height: 750, // 50% taller
+            xaxis: {title: 'Module Width (mm)'},
+            yaxis: {title: 'Module Height (mm)'},
+            margin: {l: 60, r: 20, t: 20, b: 50},
+            showlegend: false
+        };
+
+        Plotly.newPlot('heatmap', [heatmap, markers], layout);
+    </script>
+</body>
+</html>
