@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Side-by-Side Heatmap Comparison</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; }
+        .header-container { max-width: 1000px; margin: 0 auto; text-align: center; }
+        h1 { color: #1d1d1f; margin-bottom: 5px; }
+        p.subtitle { color: #86868b; margin-bottom: 20px; font-size: 14px; }
+        .charts-wrapper { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1200px; margin: 0 auto; }
+        .chart-box { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; flex: 1; min-width: 450px; }
+        h3 { text-align: center; color: #1d1d1f; margin-top: 5px; margin-bottom: 0; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h1>Yield Optimization Comparison</h1>
+        <p class="subtitle">200x280 Panel | 10mm Borders | 3mm Gap</p>
+    </div>
+    <div class="charts-wrapper">
+        
+        <!-- CHART 1: Near 93mm -->
+        <div class="chart-box">
+            <h3>Baseline Focus (Near 93mm Length)</h3>
+            <div id="heatmap1" style="height: 400px;"></div>
+        </div>
+        
+        <!-- CHART 2: Near 84mm -->
+        <div class="chart-box">
+            <h3>Shortened Focus (Near 84mm Length)</h3>
+            <div id="heatmap2" style="height: 400px;"></div>
+        </div>
+        
+    </div>
+
+    <script>
+        const pw = 200, ph = 280, border = 10, sp = 3;
+        const usable_w = pw - (2 * border);
+        const usable_h = ph - (2 * border);
+        
+        function calcYield(w, h) {
+            const c1 = Math.floor((usable_w + sp) / (w + sp)) * Math.floor((usable_h + sp) / (h + sp));
+            const c2 = Math.floor((usable_w + sp) / (h + sp)) * Math.floor((usable_h + sp) / (w + sp));
+            const maxC = Math.max(c1, c2);
+            return (maxC * w * h) / (pw * ph) * 100;
+        }
+
+        // --- Shared Z Scale (40% to 85%) for visual consistency ---
+        const zMin = 40, zMax = 85;
+
+        // --- CHART 1 DATA ---
+        const wRange1 = [], hRange1 = [];
+        for(let i = 150; i <= 300; i += 2) wRange1.push(i / 10);
+        for(let i = 850; i <= 1050; i += 2) hRange1.push(i / 10);
+        
+        const zData1 = hRange1.map(h => wRange1.map(w => calcYield(w, h)));
+
+        const heat1 = {
+            z: zData1, x: wRange1, y: hRange1, type: 'heatmap', colorscale: 'Plasma',
+            zmin: zMin, zmax: zMax, hoverongaps: false,
+            hovertemplate: 'Width: %{x:.1f}mm<br>Height: %{y:.1f}mm<br>Yield: %{z:.1f}%<extra></extra>'
+        };
+
+        const mark1 = {
+            x: [22, 23.3, 26.2, 29.8], y: [93, 88.5, 88.5, 88.5],
+            mode: 'markers+text', type: 'scatter',
+            text: ['14 units', '20 units', '18 units', '16 units'],
+            textposition: ['top center', 'bottom center', 'top center', 'bottom center'],
+            marker: { size: 10, color: ['white', '#00ff00', '#00ffff', '#ff00ff'], line: {color: 'black', width: 2} },
+            hoverinfo: 'none'
+        };
+
+        // --- CHART 2 DATA ---
+        const wRange2 = [], hRange2 = [];
+        for(let i = 150; i <= 300; i += 2) wRange2.push(i / 10);
+        for(let i = 750; i <= 950; i += 2) hRange2.push(i / 10);
+        
+        const zData2 = hRange2.map(h => wRange2.map(w => calcYield(w, h)));
+
+        const heat2 = {
+            z: zData2, x: wRange2, y: hRange2, type: 'heatmap', colorscale: 'Plasma',
+            zmin: zMin, zmax: zMax, hoverongaps: false,
+            hovertemplate: 'Width: %{x:.1f}mm<br>Height: %{y:.1f}mm<br>Yield: %{z:.1f}%<extra></extra>'
+        };
+
+        const mark2 = {
+            x: [22, 23.1], y: [84, 84.6],
+            mode: 'markers+text', type: 'scatter',
+            text: ['21 units', 'Max 21 units'],
+            textposition: ['bottom center', 'top center'],
+            marker: { size: 10, color: ['white', '#00ff00'], line: {color: 'black', width: 2} },
+            hoverinfo: 'none'
+        };
+
+        // --- PLOT BOTH ---
+        const layout1 = { xaxis: {title: 'Module Width (mm)'}, yaxis: {title: 'Module Height (mm)'}, margin: {l: 50, r: 20, t: 20, b: 40}, showlegend: false };
+        const layout2 = { xaxis: {title: 'Module Width (mm)'}, yaxis: {title: 'Module Height (mm)'}, margin: {l: 50, r: 20, t: 20, b: 40}, showlegend: false };
+
+        Plotly.newPlot('heatmap1', [heat1, mark1], layout1);
+        Plotly.newPlot('heatmap2', [heat2, mark2], layout2);
+    </script>
+</body>
+</html>

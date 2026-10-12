@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shortened Module Layout</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 { margin-bottom: 5px; }
+        p.subtitle { color: #86868b; margin-bottom: 40px; }
+        .comparison-container { display: flex; gap: 60px; flex-wrap: wrap; justify-content: center; }
+        .panel-wrapper { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
+        .panel-title { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+        .panel-stats { font-size: 14px; color: #555; margin-bottom: 20px; text-align: center; line-height: 1.5; }
+        svg { box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>Panel Layout: Shortened by 9mm</h1>
+    <p class="subtitle">200x280mm Panel | 10mm Border | 3mm Routing Gap</p>
+
+    <div class="comparison-container">
+        
+        <!-- BASELINE PANEL -->
+        <div class="panel-wrapper">
+            <div class="panel-title">Original Baseline: 22 x 93 mm</div>
+            <div class="panel-stats">
+                <strong>14 Units</strong> (7 cols &times; 2 rows)<br>
+                <span style="color: #ff3b30;">Wasted Vertical Space: 71mm</span>
+            </div>
+            
+            <svg width="300" height="420" viewBox="0 0 200 280">
+                <rect x="0" y="0" width="200" height="280" fill="#2d3436" />
+                <rect x="10" y="10" width="180" height="260" fill="none" stroke="#ff9f43" stroke-width="1.5" stroke-dasharray="4,4" />
+                
+                <g id="baseline-modules">
+                    <script>
+                        const svgBase = document.getElementById('baseline-modules');
+                        const startX1 = 14;
+                        const startY1 = 45.5;
+                        for(let r=0; r<2; r++) {
+                            for(let c=0; c<7; c++) {
+                                let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                                rect.setAttribute("x", startX1 + c * (22 + 3));
+                                rect.setAttribute("y", startY1 + r * (93 + 3));
+                                rect.setAttribute("width", 22);
+                                rect.setAttribute("height", 93);
+                                rect.setAttribute("fill", "#0984e3");
+                                rect.setAttribute("rx", 1);
+                                svgBase.appendChild(rect);
+                            }
+                        }
+                    </script>
+                </g>
+            </svg>
+        </div>
+
+        <!-- SHORTENED PANEL -->
+        <div class="panel-wrapper">
+            <div class="panel-title">New Shortened: 22 x 84 mm</div>
+            <div class="panel-stats">
+                <strong>21 Units</strong> (7 cols &times; 3 rows)<br>
+                <span style="color: #00b894;">Gained a full 3rd row! (50% unit increase)</span>
+            </div>
+            
+            <svg width="300" height="420" viewBox="0 0 200 280">
+                <rect x="0" y="0" width="200" height="280" fill="#2d3436" />
+                <rect x="10" y="10" width="180" height="260" fill="none" stroke="#ff9f43" stroke-width="1.5" stroke-dasharray="4,4" />
+                
+                <!-- Draw Modules: 7 cols, 3 rows. Standard orientation (22x84).
+                     Usable W = 180. Used W = 7*22 + 6*3 = 154 + 18 = 172. Offset X = 10 + (180-172)/2 = 14
+                     Usable H = 260. Used H = 3*84 + 2*3 = 252 + 6 = 258. Offset Y = 10 + (260-258)/2 = 11
+                -->
+                <g id="shortened-modules">
+                    <script>
+                        const svgShort = document.getElementById('shortened-modules');
+                        const startX2 = 14;
+                        const startY2 = 11;
+                        for(let r=0; r<3; r++) {
+                            for(let c=0; c<7; c++) {
+                                let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                                rect.setAttribute("x", startX2 + c * (22 + 3));
+                                rect.setAttribute("y", startY2 + r * (84 + 3));
+                                rect.setAttribute("width", 22);
+                                rect.setAttribute("height", 84);
+                                rect.setAttribute("fill", "#00b894");
+                                rect.setAttribute("rx", 1);
+                                svgShort.appendChild(rect);
+                            }
+                        }
+                    </script>
+                </g>
+            </svg>
+        </div>
+
+    </div>
+
+</body>
+</html>

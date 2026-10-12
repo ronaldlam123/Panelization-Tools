@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mixed Grid (93mm Length)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 { margin-bottom: 5px; text-align: center; }
+        p.subtitle { color: #86868b; margin-bottom: 30px; text-align: center; }
+        .panel-wrapper { 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .panel-stats { 
+            font-size: 15px; 
+            color: #333; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            line-height: 1.6; 
+        }
+        svg { 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            border-radius: 4px; 
+        }
+        .highlight { color: #00b894; font-weight: bold; }
+        .warning { color: #ff9f43; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Vertical Split "Mixed Grid"</h1>
+    <p class="subtitle">200x280mm Panel | 10mm Border | 3mm Gap<br>Maximized Dimensions: 23.3 x 93.0 mm</p>
+
+    <div class="panel-wrapper">
+        <div class="panel-stats">
+            <strong>1 Rotated Column + 3 Standard Columns</strong><br>
+            <span class="highlight">Total Units: 16 (Absolute Max for 93mm length)</span><br>
+            <span class="warning">Area Yield: 61.9%</span>
+        </div>
+        
+        <svg width="400" height="560" viewBox="0 0 200 280">
+            <!-- Panel Base -->
+            <rect x="0" y="0" width="200" height="280" fill="#2d3436" />
+            
+            <!-- Usable Area -->
+            <rect x="10" y="10" width="180" height="260" fill="none" stroke="#ff9f43" stroke-width="1.5" stroke-dasharray="4,4" />
+            <text x="100" y="25" fill="#ff9f43" font-size="6" text-anchor="middle" font-family="sans-serif">180mm Usable Width</text>
+            <text x="17" y="140" fill="#ff9f43" font-size="6" text-anchor="middle" font-family="sans-serif" transform="rotate(-90 17,140)">260mm Usable Height</text>
+            
+            <g id="mixed-modules-93">
+                <script>
+                    const svgContainer = document.getElementById('mixed-modules-93');
+                    const gap = 3;
+                    const w = 23.3; 
+                    const h = 93.0; 
+                    
+                    // Col 1 (Rotated: Width=93, Height=23.3) - Fits 10 rows
+                    // Height used: 10*23.3 + 9*3 = 233 + 27 = 260mm (Perfect fit!)
+                    for(let r=0; r<10; r++) {
+                        const x = 10;
+                        const y = 10 + r * (w + gap);
+                        
+                        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        rect.setAttribute("x", x);
+                        rect.setAttribute("y", y);
+                        rect.setAttribute("width", h);
+                        rect.setAttribute("height", w);
+                        rect.setAttribute("fill", "#00b894");
+                        rect.setAttribute("rx", 1);
+                        svgContainer.appendChild(rect);
+                    }
+
+                    // Cols 2-4 (Standard: Width=23.3, Height=93.0) - Fits 3 cols, 2 rows
+                    // Width used total: 93 (col1) + 3 (gap) + 3*23.3 + 2*3 = 96 + 69.9 + 6 = 171.9mm
+                    const startX = 10 + h + gap;
+                    
+                    // Center the 2 standard rows vertically in the 260mm height
+                    const standard_used_h = (2 * h) + gap;
+                    const startY = 10 + (260 - standard_used_h) / 2;
+
+                    for(let r=0; r<2; r++) {
+                        for(let c=0; c<3; c++) {
+                            const x = startX + c * (w + gap);
+                            const y = startY + r * (h + gap);
+                            
+                            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                            rect.setAttribute("x", x);
+                            rect.setAttribute("y", y);
+                            rect.setAttribute("width", w);
+                            rect.setAttribute("height", h);
+                            rect.setAttribute("fill", "#0984e3");
+                            rect.setAttribute("rx", 1);
+                            svgContainer.appendChild(rect);
+                        }
+                    }
+                </script>
+            </g>
+        </svg>
+    </div>
+
+</body>
+</html>

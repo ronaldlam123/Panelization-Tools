@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panelization Heatmap</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fff; }
+        .container { max-width: 800px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; border-radius: 8px; }
+        h2 { text-align: center; color: #1d1d1f; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Panelization Yield Heatmap (200x400 Panel, 2mm gap)</h2>
+        <div id="heatmap"></div>
+    </div>
+    <script>
+        const pw = 200;
+        const ph = 400;
+        const sp = 2;
+        
+        const wRange = [];
+        for(let i=10; i<=150; i+=2) wRange.push(i);
+        
+        const hRange = [];
+        for(let i=10; i<=300; i+=4) hRange.push(i);
+        
+        const zData = [];
+        
+        for (let i = 0; i < hRange.length; i++) {
+            const h = hRange[i];
+            const row = [];
+            for (let j = 0; j < wRange.length; j++) {
+                const w = wRange[j];
+                
+                // Option 1
+                const c1 = Math.floor((pw + sp) / (w + sp)) * Math.floor((ph + sp) / (h + sp));
+                // Option 2
+                const c2 = Math.floor((pw + sp) / (h + sp)) * Math.floor((ph + sp) / (w + sp));
+                
+                const maxC = Math.max(c1, c2);
+                const yieldPct = (maxC * w * h) / (pw * ph) * 100;
+                
+                row.push(yieldPct);
+            }
+            zData.push(row);
+        }
+
+        const data = [{
+            z: zData,
+            x: wRange,
+            y: hRange,
+            type: 'heatmap',
+            colorscale: 'Plasma',
+            hoverongaps: false,
+            hovertemplate: 'Width: %{x}mm<br>Height: %{y}mm<br>Yield: %{z:.1f}%<extra></extra>'
+        }];
+
+        const layout = {
+            xaxis: {title: 'Module Width (mm)'},
+            yaxis: {title: 'Module Height (mm)'},
+            margin: {l: 60, r: 20, t: 20, b: 50}
+        };
+
+        Plotly.newPlot('heatmap', data, layout);
+    </script>
+</body>
+</html>

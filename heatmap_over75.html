@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panelization Optimization (>75% Yields)</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; border-radius: 8px; }
+        h2 { text-align: center; color: #1d1d1f; }
+        p.subtitle { text-align: center; color: #86868b; margin-top: -10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Yield Optimization: Reaching >75%</h2>
+        <p class="subtitle">200x280 Panel | 10mm Border All Sides | 3mm Gap</p>
+        <div id="heatmap"></div>
+    </div>
+    <script>
+        const pw = 200, ph = 280;
+        const border = 10;
+        const usable_w = pw - (2 * border); // 180
+        const usable_h = ph - (2 * border); // 260
+        const sp = 3;
+        
+        // Sweep Width: 15mm to 36mm
+        const wRange = [];
+        for(let i = 150; i <= 360; i += 2) wRange.push(i / 10);
+        
+        // Sweep Height: 80mm to 95mm 
+        const hRange = [];
+        for(let i = 800; i <= 950; i += 2) hRange.push(i / 10);
+        
+        const zData = [];
+        for (let i = 0; i < hRange.length; i++) {
+            const h = hRange[i];
+            const row = [];
+            for (let j = 0; j < wRange.length; j++) {
+                const w = wRange[j];
+                const c1 = Math.floor((usable_w + sp) / (w + sp)) * Math.floor((usable_h + sp) / (h + sp));
+                const c2 = Math.floor((usable_w + sp) / (h + sp)) * Math.floor((usable_h + sp) / (w + sp));
+                const maxC = Math.max(c1, c2);
+                
+                const yieldPct = (maxC * w * h) / (pw * ph) * 100;
+                row.push(yieldPct);
+            }
+            zData.push(row);
+        }
+
+        const heatmap = {
+            z: zData,
+            x: wRange,
+            y: hRange,
+            type: 'heatmap',
+            colorscale: 'Plasma',
+            zmin: 40,
+            zmax: 77,
+            hoverongaps: false,
+            hovertemplate: 'Width: %{x:.1f}mm<br>Height: %{y:.1f}mm<br>Yield: %{z:.2f}%<extra></extra>'
+        };
+
+        const markers = {
+            x: [22, 22, 23.3, 29.8, 33.6, 34.5],
+            y: [93, 84, 88.5, 88.5, 84.6, 88.5],
+            mode: 'markers+text',
+            type: 'scatter',
+            name: 'Key Configurations',
+            text: [
+                'Old Baseline (14u)', 
+                'Shortened (21u)', 
+                '20u (73.6%)', 
+                '16u (>75%)', 
+                '15u (>76%)', 
+                '14u (>76%)'
+            ],
+            textposition: [
+                'bottom center', 
+                'bottom left', 
+                'top center', 
+                'top center', 
+                'bottom center', 
+                'top right'
+            ],
+            marker: { 
+                size: [10, 10, 8, 12, 12, 12], 
+                color: ['#ff3b30', '#007aff', '#a29bfe', '#00b894', '#00b894', '#00b894'], 
+                line: {color: 'white', width: 2} 
+            },
+            hoverinfo: 'none'
+        };
+
+        const layout = {
+            xaxis: {title: 'Module Width (mm)'},
+            yaxis: {title: 'Module Height (mm)'},
+            margin: {l: 60, r: 20, t: 20, b: 50},
+            showlegend: false
+        };
+
+        Plotly.newPlot('heatmap', [heatmap, markers], layout);
+    </script>
+</body>
+</html>

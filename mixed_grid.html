@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mixed Orientation Layout</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 { margin-bottom: 5px; text-align: center; }
+        p.subtitle { color: #86868b; margin-bottom: 30px; text-align: center; }
+        .panel-wrapper { 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .panel-stats { 
+            font-size: 15px; 
+            color: #333; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            line-height: 1.6; 
+        }
+        svg { 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            border-radius: 4px; 
+        }
+        .highlight { color: #00b894; font-weight: bold; }
+        .warning { color: #ff3b30; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>The "Mixed Grid" Breakthrough</h1>
+    <p class="subtitle">200x280mm Panel | 10mm Border | 3mm Routing Gap<br>New Dimensions: 71.91 x 105.8 mm</p>
+
+    <div class="panel-wrapper">
+        <div class="panel-stats">
+            <strong>5 Bounding Blocks</strong> (1 Standard Col + 1 Rotated Col)<br>
+            <span class="highlight">Total Boards: 10 (25% Increase!)</span><br>
+            <span class="warning">Status: Misses fitting by exactly 0.71 mm</span>
+        </div>
+        
+        <svg width="400" height="560" viewBox="0 0 200 280">
+            <!-- Panel Base -->
+            <rect x="0" y="0" width="200" height="280" fill="#2d3436" />
+            
+            <!-- Usable Area -->
+            <rect x="10" y="10" width="180" height="260" fill="none" stroke="#ff9f43" stroke-width="1.5" stroke-dasharray="4,4" />
+            <text x="100" y="25" fill="#ff9f43" font-size="6" text-anchor="middle" font-family="sans-serif">180mm Usable Width</text>
+            
+            <!-- 
+                Col 1: Standard (71.91 x 105.8). Fits 2 rows.
+                Col 2: Rotated (105.8 x 71.91). Fits 3 rows.
+                Total width = 71.91 + 105.8 + 3 = 180.71 mm (Overshoots 180mm by 0.71mm)
+            -->
+            <g id="mixed-modules">
+                <script>
+                    const svgContainer = document.getElementById('mixed-modules');
+                    const gap = 3;
+                    const w1 = 71.91; // Standard width
+                    const h1 = 105.8; // Standard height
+                    const w2 = 105.8; // Rotated width
+                    const h2 = 71.91; // Rotated height
+                    
+                    // Col 1 (Standard)
+                    for(let r=0; r<2; r++) {
+                        const x = 10;
+                        const y = 10 + r * (h1 + gap);
+                        
+                        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        rect.setAttribute("x", x);
+                        rect.setAttribute("y", y);
+                        rect.setAttribute("width", w1);
+                        rect.setAttribute("height", h1);
+                        rect.setAttribute("fill", "#0984e3");
+                        rect.setAttribute("rx", 1);
+                        svgContainer.appendChild(rect);
+                    }
+
+                    // Col 2 (Rotated) - Draws slightly outside the orange dotted line!
+                    for(let r=0; r<3; r++) {
+                        const x = 10 + w1 + gap;
+                        const y = 10 + r * (h2 + gap);
+                        
+                        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        rect.setAttribute("x", x);
+                        rect.setAttribute("y", y);
+                        rect.setAttribute("width", w2);
+                        rect.setAttribute("height", h2);
+                        rect.setAttribute("fill", "#00b894");
+                        rect.setAttribute("rx", 1);
+                        svgContainer.appendChild(rect);
+                    }
+
+                    // Draw the 0.71mm overflow warning line
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", 190);
+                    line.setAttribute("y1", 10);
+                    line.setAttribute("x2", 190);
+                    line.setAttribute("y2", 270);
+                    line.setAttribute("stroke", "#ff3b30");
+                    line.setAttribute("stroke-width", "1");
+                    svgContainer.appendChild(line);
+
+                </script>
+            </g>
+        </svg>
+    </div>
+
+</body>
+</html>
